@@ -24,3 +24,4 @@ dependencies:
       - seaborn==0.13.2
       - ucimlrepo==0.0.7
       - gdown==6.4.1
+      - memory_profiler==0.61.0
