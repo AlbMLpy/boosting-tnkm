@@ -12,6 +12,7 @@ from source.utils import get_path, create_dir_if_not_exists
 from source.data_functions import load_transform_data_valid_test
 from configs.base_learners import (
     SCALER, 
+    EXP_DIR,
     N_TRIALS,
     VAL_SIZE,
     DATASETS,
@@ -24,7 +25,6 @@ from configs.base_learners import (
 
 
 DATA_DIR = Path.cwd().parents[1] / 'data'
-EXP_DIR = Path('./artifacts/training_artifacts')
 TQDM_HELP = "Turn on/off tqdm interactive progress line;"
 
 

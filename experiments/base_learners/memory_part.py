@@ -23,6 +23,7 @@ from source.utils import (
 )
 from configs.base_learners import (
     SCALER, 
+    EXP_DIR,
     DATASETS,
     TEST_SIZE, 
     TRANSFORM_X, 
@@ -33,7 +34,6 @@ from configs.base_learners import (
 
 
 DATA_DIR = Path.cwd().parents[1] / 'data'
-EXP_DIR = Path('./artifacts/training_artifacts')
 TQDM_HELP = "Turn on/off tqdm interactive progress line;"
 
 

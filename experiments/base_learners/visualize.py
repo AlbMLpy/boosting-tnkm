@@ -3,15 +3,14 @@ from pathlib import Path
 sys.path.append(str(Path.cwd().parents[1]))
 
 from source.visuals import create_figure, PARAMS
-from configs.base_learners import BASE_RANKS, N_ESTIMATORS
+from configs.base_learners import BASE_RANKS, N_ESTIMATORS, EXP_DIR
 
 
 DATA_NAMES = ["energy", "concrete", "kin8nm", "naval"]
 MODEL_NAMES = [
     f"br{br}_nest{nest}" for br, nest in zip(BASE_RANKS, N_ESTIMATORS)
 ]
-EXP_DIR = Path('./artifacts/training_artifacts')
-SAVE_PATH = str(EXP_DIR / 'rank_dynamics.png')
+SAVE_PATH = str(EXP_DIR / 'base_rank_ablations.png')
 
 _COLORS = ["#01abd5", "#ed3920", '#268c26', '#ff7f0e', '#9467bd']
 MODEL_COLORS = {

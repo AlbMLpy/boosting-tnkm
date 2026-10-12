@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import jax.numpy as jnp
 
 
@@ -7,12 +9,13 @@ TEST_SIZE = 0.2
 SCALER = 'minmax'
 TRANSFORM_X = True
 TRANSFORM_Y = True
-GAMMA_LIST = [1e-6,]
+GAMMA_LIST = [1e-6, 1e-5, 1e-4, 1e-3, 1e-2]
 BASE_RANKS = [1, 2, 4, 8, 12]
 N_ESTIMATORS = [24, 12, 6, 3, 2]
 
 SAVE_FILE_PER = 'metrics.csv'
 SAVE_FILE_MEM = 'memory.csv'
+EXP_DIR = Path('./artifacts/training_artifacts')
 DATASETS = ['concrete', 'energy', 'kin8nm', 'naval']
 
 
