@@ -4,7 +4,7 @@
 
 <b> Authors: </b> <a href="https://albmlpy.github.io/">Albert Saiapin</a>, Kim Batselier
 
-[ArXiv]() | [Experiments](#-how-to-reproduce-the-numerical-experiments)
+[ArXiv]() | [Experiments](https://github.com/AlbMLpy/boosting-tnkm/tree/main#-how-to-reproduce-the-numerical-experiments)
 
 <p align="center">
   <a href=""><img src="assets/diagram.png?raw=True" alt="Figure 1" width="80%"></a>
@@ -63,7 +63,7 @@ all `docker` commands in this guide with `sudo`.
     ```shell
     docker run -it -v $(pwd)/experiments:/app/experiments --name gb-tnkm gb-tnkm-project
     ```
-3. **You are all set to reproduce the [Numerical Experiments](#-how-to-reproduce-the-numerical-experiments)!** 🤗
+3. **You are all set to reproduce the [Numerical Experiments](https://github.com/AlbMLpy/boosting-tnkm/tree/main#-how-to-reproduce-the-numerical-experiments)!** 🤗
 
 4. **Re-enter** the same container:
     ```shell
@@ -104,12 +104,13 @@ Run the following commands from the repository root unless noted otherwise.
     ```shell
     python analysis.py
     ```
+    The results can be found under `./artifacts/training_artifacts` directory.
 
 3. **Run the hyperparameter-settings experiment:**
 
     From `base_learners`, move to the other experiment directory:
     ```shell
-    cd ../hypers_settings
+    cd ../hypers_setting
     python experiment.py all all
     ```
     This runs all hyperparameter-settings experiments and saves the results under `./artifacts/training_artifacts` directory.
@@ -118,6 +119,7 @@ Run the following commands from the repository root unless noted otherwise.
     ```shell
     python analysis.py
     ```
+    The results can be found under `./artifacts/training_artifacts` directory.
 
 
 ## 📜 Citation
