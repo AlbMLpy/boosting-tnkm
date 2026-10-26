@@ -4,19 +4,23 @@
 
 <b> Authors: </b> <a href="https://albmlpy.github.io/">Albert Saiapin</a>, Kim Batselier
 
-[ArXiv]() | [Experiments]()
+[ArXiv]() | [Experiments](#-how-to-reproduce-the-numerical-experiments)
 
 <p align="center">
-  <a href=""><img src="assets/predictions.png?raw=True" alt="Figure 1" width="70%"></a>
+  <a href=""><img src="assets/diagram.png?raw=True" alt="Figure 1" width="80%"></a>
 </p>
+
+**Figure 1:** Comparison of the training procedures for CP tensor network kernel machines (CPKMs) using gradient boosting (GB) and rank selection via validation (CV). (a) GB-CPKM incrementally builds an ensemble by training fixed-rank $\hat{R}$ base learners and concatenating their factor matrices along the rank dimension to represent the combined model. (b) In contrast, CV-CPKM independently trains candidate models with different CP ranks and selects the rank that achieves the lowest validation error.
 
 </div>
 
-## 💫 Project Description
-In progress ...
+## 🌟 Project Description
+This repository provides the implementation of **GB-CPKM**, a gradient boosting framework for tensor network kernel machines (TNKMs) based on the canonical polyadic (CP) decomposition. The proposed approach incrementally builds a predictive model by combining fixed-rank base learners, providing an alternative to conventional rank-selection methods that train multiple models with different CP ranks.
+
+The repository contains the code and experimental configurations used to evaluate GB-CPKM on regression benchmarks of varying sizes and dimensionalities. It supports reproducing the experiments reported in our paper, including comparisons with a validation-based rank-selection baseline in terms of predictive performance, training time, and peak memory consumption.
 
 
-## 📈 Datasets
+## 📉 Datasets
 For ablation studies and real-data experiments, we use the following 4 UCI regression datasets (Dua and Graff, 2017), Airline (Hensman et al., 2013), Precipitation (Dong et al., 2017) and Kin8nm (10.5281/zenodo.14645865) datasets:
 
 |  | Energy | Concrete | Kin8nm | Naval | Precipitation | HouseElectric | Airline |
@@ -43,47 +47,82 @@ In order to read and run `Jupyter Notebooks` you may follow either of two option
   either with `conda install jupyterlab` or with `conda install jupyter notebook`
 
 
+## 🐳 (Optional) Running Experiments with Docker
+
+Instead of setting up a Conda environment manually, you can run the entire experiment inside a Docker container. This ensures full reproducibility and requires only `Docker to be installed` on your system. 
+
+ℹ️ Note: Depending on your Docker installation, you may need to prefix
+all `docker` commands in this guide with `sudo`. 
+
+1. From the project root (where the `Dockerfile` is located) **build** the Docker image:
+    ```shell
+    docker build -t gb-tnkm-project .
+    ```
+
+2. **Run** the container interactively:
+    ```shell
+    docker run -it -v $(pwd)/experiments:/app/experiments --name gb-tnkm gb-tnkm-project
+    ```
+3. **You are all set to reproduce the [Numerical Experiments](#-how-to-reproduce-the-numerical-experiments)!** 🤗
+
+4. **Re-enter** the same container:
+    ```shell
+    docker start -ai gb-tnkm
+    ```
+
+5. **Cleaning up** (optional):
+    
+    1. Remove the container:
+        ```shell
+        docker rm gb-tnkm
+        ```
+    2. Remove the image:
+        ```shell
+        docker rmi gb-tnkm-project
+        ```
+
+
 ## ⚗️ How to Reproduce the Numerical Experiments
 
-0. **Activate** the virtual environment:
+Run the following commands from the repository root unless noted otherwise.
+
+1. **Activate the environment and prepare the project:**
     ```shell
     conda activate boosting_env
+    python setup_project.py
     ```
+    This downloads the datasets and configures the project directories.
 
-1. **Run:**
-   ```shell
-   python setup_project.py
-   ```
-   to download all datasets and configure the project directories. 
-
-2. Once the setup script has completed, **run:**
+2. **Run the base-learners experiment:**
     ```shell
-    cd experiments
+    cd experiments/base_learners
+    python experiment.py all
     ```
-    This folder contains two subdirectories, each corresponding to a distinct experiment described in the paper: `base_learners` and `hypers_settings`.
+    This runs all base-learners experiments and saves the results under `./artifacts/training_artifacts` directory.
 
-3. `base_learners`
-    -  **Run:** `cd base_learners`
-    -  **Train**: 
-        ```bash
-        python experiment.py all
-        ```
-        Computes evaluation metrics for further comparison. These are stored in `artifacts/training_artifacts`.
-    -  **Analyze:** Run `analysis.ipynb` in VS Code using the `boosting_env` environment to generate figures/tables stored in `./artifacts`.
+    To generate the resulting figures, run:
+    ```shell
+    python analysis.py
+    ```
 
-4. `hypers_settings`
-    -  **Run:** `cd hypers_settings`
-    -  **Train**: 
-        ```bash
-        python experiment.py all all
-        ```
-        Computes evaluation metrics for further comparison. These are stored in `artifacts/training_artifacts`.
-    -  **Analyze:** Run `analysis.ipynb` in VS Code using the `boosting_env` environment to generate figures/tables stored in `./artifacts`. 
+3. **Run the hyperparameter-settings experiment:**
+
+    From `base_learners`, move to the other experiment directory:
+    ```shell
+    cd ../hypers_settings
+    python experiment.py all all
+    ```
+    This runs all hyperparameter-settings experiments and saves the results under `./artifacts/training_artifacts` directory.
+
+    To generate the resulting figures and tables, run:
+    ```shell
+    python analysis.py
+    ```
 
 
 ## 📜 Citation
 
-If you find our work helpful, please consider citing the paper:
+If you find this repository useful in your work, please cite the paper:
 
 ```bibtex
 In Progress!
