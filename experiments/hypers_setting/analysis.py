@@ -115,7 +115,14 @@ if __name__ == "__main__":
         + r"Overall, GB-CPKM trains up to $6\times$ faster and uses up to $2\times$ less peak memory, on average, "
         + r"than CV-CPKM, while achieving comparable test MSE."
     )
-    final_df = final_df.rename({n: fr"{n} $\downarrow$"for n in ["MSE", "Time", "Memory"]}, axis=1)
+    final_df = final_df.rename(
+        {
+            "MSE": "MSE $\downarrow$",
+            "Time": "Time (sec.) $\downarrow$",
+            "Memory": "Memory (MiB) $\downarrow$"
+        }, 
+        axis=1
+    )
     print(
         (
             final_df
