@@ -83,7 +83,7 @@ if __name__ == '__main__':
     for i, rank in tqdm(enumerate(rank_list, start=1), disable=tqdm_disable):
         if model_name == 'cpkm': 
             dt_changes = dict(rank=rank, gamma_w=1e-2)
-        elif model_name == 'gb_cpkm': 
+        elif model_name in ['gb_cpkm', 'gb_cpkm_hybrid']: 
             dt_changes = dict(n_estimators=i, gamma_w=1e-2)
         update_dict(config, dt_changes)
         mem = memory_usage((training, (config, load_data_f), {})) # MiB

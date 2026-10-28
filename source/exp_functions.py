@@ -47,7 +47,7 @@ def build_model(config: dict, features: ProductFeatures):
         return CPKM(
             features, par['rank'], seed=par['seed'], dtype=par['dtype'],
         )
-    elif cfg['type'] == 'gb_cpkm': # fixed-rank base learner
+    elif cfg['type'] in ['gb_cpkm', 'gb_cpkm_hybrid']: # fixed-rank base learner
         return CPKM(
             features, par['rank'], seed=par['seed'], dtype=par['dtype'],
         )
@@ -130,7 +130,7 @@ def get_valid_info(config: dict, valid_split: tuple) -> dict:
                 model, train_info = train_f(x_tr, y_tr)
                 tracker.track(rank, gamma_w, model, train_info)
         _res_dict = tracker.res_dict
-    elif config['model']['type'] == 'gb_cpkm':
+    elif config['model']['type'] in ['gb_cpkm', 'gb_cpkm_hybrid']:
         _res_dict = defaultdict(list)
         for gamma_w in config['exp']['gamma_list']:
             cfg = copy.deepcopy(config)
@@ -167,7 +167,7 @@ def get_test_info(
         if cfg['model']['type'] == 'cpkm':
             rank_t = int(valid_info['rank_v'][top_idx])
             update_dict(cfg, dict(rank=rank_t, gamma_w=gamma_w))
-        elif cfg['model']['type'] == 'gb_cpkm':
+        elif cfg['model']['type'] in ['gb_cpkm', 'gb_cpkm_hybrid']:
             n_estimators = int(valid_info['est_n'][top_idx])
             rank_t = n_estimators*cfg['model']['params']['rank']
             update_dict(cfg, dict(n_estimators=n_estimators, gamma_w=gamma_w))
@@ -176,6 +176,12 @@ def get_test_info(
         if not test_last or i == len(config['exp']['rank_list']):
             train_f = config2train_f(cfg)
             model, _ = train_f(x_train, y_train)
+
+            if cfg['optim'].get('optim') is not None: # Hybrid setting!
+                cfg['optim']['optim']['params']['gamma_w'] = gamma_w
+                optimizer = build_optimizer(cfg['optim'])
+                model = train(model, optimizer, x_train, y_train)
+
             mse_value = mse(y_test, model.predict(x_test)).item()
         else:
             mse_value = np.float64(np.nan)

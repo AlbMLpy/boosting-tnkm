@@ -25,10 +25,14 @@ DATA_NAMES_ALL = [
     "energy", "concrete", "kin8nm", "naval",
     "precipitation", "house_electric", "airline"
 ]
-MODEL_NAMES = ["cpkm", "gb_cpkm"]
+MODEL_NAMES_ALL = ["cpkm", "gb_cpkm", "gb_cpkm_hybrid"]
 EXP_DIR = Path('./artifacts/training_artifacts')
 METRIC_COL2NAME = {"mse_t": "MSE", "train_time_v_cumsum": "Time"}
-MODEL_LABELS = {"cpkm": "CV-CPKM", "gb_cpkm": "GB-CPKM"}
+MODEL_LABELS = {
+    "cpkm": "CV-CPKM", 
+    "gb_cpkm": "GB-CPKM",
+    "gb_cpkm_hybrid": "GB-CPKM(H)",
+}
 DATA_DIR = Path.cwd().parents[1] / 'data'
 
 
@@ -52,14 +56,15 @@ def mean_std_str(mean, std, mean_dec=2, std_dec=2):
 if __name__ == "__main__":
     ## Large-Scale Problems: Results
     model2res = dict()
-    for model_name in MODEL_NAMES:
+    for model_name in MODEL_NAMES_ALL:
         dd = defaultdict(list)
         for data_name in DATA_NAMES_ALL:
             result_dir = get_path(EXP_DIR, data_name, model_name)
             metrics_df = pd.read_csv(result_dir / "metrics.csv")
-            memory_df = pd.read_csv(result_dir / "memory.csv")
             result = aggregate_metrics(metrics_df)
-            result = result.merge(memory_df, on="n_options")
+            if model_name != "gb_cpkm_hybrid":
+                memory_df = pd.read_csv(result_dir / "memory.csv")
+                result = result.merge(memory_df, on="n_options")
 
             max_n = result['n_options'].max()
             res_dict = result[result['n_options'] == max_n].iloc[0]
@@ -76,8 +81,10 @@ if __name__ == "__main__":
                 dd[METRIC_COL2NAME[metric]].append(
                     mean_std_str(_mean, _std, mean_dec=mean_dec, std_dec=2)
                 )
-            dd['Memory'].append(f"{res_dict['mem']:.0f}")
+            if model_name != "gb_cpkm_hybrid":    
+                dd['Memory'].append(f"{res_dict['mem']:.0f}")
         model2res[MODEL_LABELS[model_name]] = pd.DataFrame(dd)
+    model2res["GB-CPKM(H)"] = model2res["GB-CPKM(H)"].drop("Time", axis=1)
 
     stats_dict = defaultdict(list)
     for data_name in DATA_NAMES_ALL:
@@ -113,13 +120,15 @@ if __name__ == "__main__":
         + r"Each experiment is repeated over 10 runs, with results reported as mean $\pm$ one standard deviation. "
         + r"$N$ denotes the number of samples, and $D$ denotes the input dimensionality. "
         + r"Overall, GB-CPKM trains up to $6\times$ faster and uses up to $2\times$ less peak memory, on average, "
-        + r"than CV-CPKM, while achieving comparable test MSE."
+        + r"than CV-CPKM, while achieving comparable test MSE. "
+        + r"The hybrid variant, GB-CPKM(H), further improves predictive performance on most datasets "
+        + r"by performing an additional full ALS sweep on the combined model."
     )
     final_df = final_df.rename(
         {
-            "MSE": "MSE $\downarrow$",
-            "Time": "Time (sec.) $\downarrow$",
-            "Memory": "Memory (MiB) $\downarrow$"
+            "MSE": r"MSE (test) $\downarrow$",
+            "Time": r"Time (sec.) $\downarrow$",
+            "Memory": r"Memory (MiB) $\downarrow$"
         }, 
         axis=1
     )
@@ -128,7 +137,7 @@ if __name__ == "__main__":
             final_df
             .to_latex(
                 float_format="%.2f", 
-                column_format='||l||c|c||c|c||c|c||c|c||',
+                column_format='||l||c|c|c||c|c||c|c||c|c||',
                 caption=caption,
                 label="table:hypers_search",
                 multicolumn=True, 
