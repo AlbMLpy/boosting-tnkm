@@ -14,7 +14,7 @@ DATASETS = [
     'concrete', 'energy', 'kin8nm', 'naval',
     'airline', 'house_electric', 'precipitation',
 ]
-MODELS = ['cpkm', 'gb_cpkm']
+MODELS = ['cpkm', 'gb_cpkm', 'gb_cpkm_hybrid']
 LARGE_SCALE_DATA = ['airline', 'house_electric', 'precipitation']
 
 
@@ -58,6 +58,19 @@ def get_config(data_name: str, model_name: str) -> dict:
             params=dict(
                 n_estimators=n_estimators, n_epoch=5, gamma_w=None,
             ) | opt_shared,
+        )
+    elif model_name == 'gb_cpkm_hybrid':
+        model = dict(
+            type=model_name, params=dict(rank=base_rank) | model_shared,
+        )
+        optim=dict(
+            type='gb_als',
+            params=dict(
+                n_estimators=n_estimators, n_epoch=5, gamma_w=None,
+            ) | opt_shared,
+            optim=dict(
+                type='als', params=dict(n_epoch=1, gamma_w=None) | opt_shared,
+            )
         )
     exp = dict(rank_list=rank_list, gamma_list=[1e-6, 1e-5, 1e-4, 1e-3, 1e-2])
     features = dict(type='poly', params=dict(m_order=m_order))
